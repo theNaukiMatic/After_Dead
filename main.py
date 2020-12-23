@@ -31,6 +31,16 @@ while(isGameRunning):
         if(event.type == pygame.QUIT):
             isGameRunning = False
 
+    key_pressed = pygame.key.get_pressed()
+
+    #move player left
+    if(key_pressed[pygame.K_LEFT]):
+        player.push_left()
+
+    #move player right
+    if(key_pressed[pygame.K_RIGHT]):
+        player.push_right()
+
 
     #---------
     #RENDERING
