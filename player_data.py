@@ -47,8 +47,10 @@ class Player():
             pygame.image.load("assets/player/skeleton_walk_11.png"),
             pygame.image.load("assets/player/skeleton_walk_12.png"),      
         ])
-    
+
+
     #to manualy set the player's location (spawning, or maybe teleportaion feature)
+    #also usefull to stick the player perfectly to the ground after a jump
     def set_location(self, inputx, inputy):
         self.x = inputx
         self.y = inputy
@@ -56,12 +58,13 @@ class Player():
     def get_location(self):
         return (self.x, self.y)
     
-    def draw(self,screen):
-
+    def update(self, platforms):
         #set default state as idle
         self.state = 'idle'
         if self.speed_x != 0:
             self.state = 'walking'
+        
+        self.is_on_ground = False
 
         #changng the speed  of the player
         self.speed_x += self.accelaration_x
@@ -85,10 +88,50 @@ class Player():
         #resetting the accelaration to 0 so that character only accelarates while the key is pressed
         self.accelaration_x = 0
 
+
+        #horizontal movement
+        self.speed_x += self.accelaration_x
+        new_x = self.x + self.speed_x
+
+        hitbox_x = pygame.Rect(new_x, self.y, 96, 128)
+        is_colliding_x = False
+
+        #horizontal collision detection
+        for p in platforms.get_platforms():
+            if(p.colliderect(hitbox_x)):
+                is_colliding_x = True
+                self.speed_x *= (-1)
+                break
+        
+        if is_colliding_x == False:
+            self.x = new_x
+
+        #vertical movement
         self.speed_y += self.accelaration_y
-        #changing the location based on the speed
-        self.x += self.speed_x
-        self.y += self.speed_y
+        new_y = self.y + self.speed_y
+
+        hitbox_y = pygame.Rect(self.x, new_y, 96, 128)
+        is_colliding_y = False
+
+        #vertical collision detection
+        for p in platforms.get_platforms():
+            if(p.colliderect(hitbox_y)):
+                is_colliding_y = True
+                self.speed_y = 0
+
+                #stick the player to the ground in case of a collision
+                if(self.y < p[1]):
+                    self.y  = p[1] - 128
+                    self.is_on_ground = True
+                
+                break
+        
+        if(is_colliding_y == False):
+            self.y = new_y
+    
+
+
+    def draw(self,screen):
 
         #drawing idle character
         if(self.state == 'idle'):
@@ -99,6 +142,7 @@ class Player():
 
             self.player_idle_animation.update()
         
+        #drawing the walking character
         elif(self.state == 'walking'):
             if self.direction == 'right':
                 self.player_walking_animation.draw(screen, self.x, self.y, False)
@@ -116,6 +160,11 @@ class Player():
         self.direction = 'left'
     
     def jump(self):
-        self.speed_y = -variables.JUMP_SPEED
-        
+        if(self.is_on_ground):
+            self.speed_y = -variables.JUMP_SPEED
 
+    def get_hitbox(self):
+        return pygame.Rect(self.x, self.y, 96, 128)
+    
+    def get_is_on_ground(self):
+        return is_on_ground

@@ -2,6 +2,7 @@ import pygame
 import player_data
 import variables
 import platforms
+import engine
 
 #----
 #INIT
@@ -18,16 +19,18 @@ player = player_data.Player()
 
 #PLATFORMS
 platforms = platforms.Platforms()
+platforms.add_platform(0,500, 960 ,40)
+platforms.add_platform(0,400, 100 ,100)
+platforms.add_platform(860,400, 100 ,100)
 
-platforms.add_platform(0,0, 50 ,50)
-
+#Collision Engine
+collision = engine.Collision(player, platforms)
 
 #--------
 #GAMELOOP
 #--------
 isGameRunning = True
 while(isGameRunning):
-
 
     #-----
     #INPUT
@@ -52,15 +55,15 @@ while(isGameRunning):
         player.jump()
 
 
+    # collision.is_collision_x()
+    # collision.is_colliding_y()
+    player.update(platforms)
     #---------
     #RENDERING
     #---------
     screen.fill(variables.BACKGROUND_COLOR)
-    player.draw(screen)
     platforms.draw(screen)
-
- 
-
+    player.draw(screen)
 
     # Screen
     pygame.display.flip()
