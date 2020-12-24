@@ -1,6 +1,7 @@
 import pygame
 import player_data
 import variables
+import platforms
 
 #----
 #INIT
@@ -14,6 +15,11 @@ screen_height = screen.get_height()
 
 #PLAYER
 player = player_data.Player()
+
+#PLATFORMS
+platforms = platforms.Platforms()
+
+platforms.add_platform(0,0, 50 ,50)
 
 
 #--------
@@ -40,6 +46,10 @@ while(isGameRunning):
     #move player right
     if(key_pressed[pygame.K_RIGHT]):
         player.push_right()
+    
+    #make player jump
+    if(key_pressed[pygame.K_SPACE]):
+        player.jump()
 
 
     #---------
@@ -47,6 +57,7 @@ while(isGameRunning):
     #---------
     screen.fill(variables.BACKGROUND_COLOR)
     player.draw(screen)
+    platforms.draw(screen)
 
  
 

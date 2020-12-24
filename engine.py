@@ -26,3 +26,12 @@ class Animation():
 
     def setAnimationSpeed(self, speed):
         self.animationSpeed = speed
+
+class Collision():
+    def __init(self,player, platforms):
+        self.player = player
+        self.platforms = platforms
+        self.isColliding = False
+    
+    def is_colliding(self, player, platforms):
+        pass

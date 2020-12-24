@@ -9,12 +9,14 @@ class Player():
         self.height = 0
         self.width = 0
         self.accelaration_x = 0
-        self.accelaration_y = 0
+        self.accelaration_y = variables.GRAVITY
         self.speed_x = 0
         self.speed_y = 0
         self.is_on_ground = False
         self.direction = 'right'
         self.state = 'idle'
+
+        #player's idle animation
         self.player_idle_animation =engine.Animation([
             pygame.image.load("assets/player/skeleton_idle_00.png"),
             pygame.image.load("assets/player/skeleton_idle_01.png"),
@@ -28,7 +30,25 @@ class Player():
             pygame.image.load("assets/player/skeleton_idle_09.png"),
             pygame.image.load("assets/player/skeleton_idle_10.png"),
         ] )
+
+        #player's walking animations
+        self.player_walking_animation = engine.Animation([
+            pygame.image.load("assets/player/skeleton_walk_00.png"),
+            pygame.image.load("assets/player/skeleton_walk_01.png"),
+            pygame.image.load("assets/player/skeleton_walk_02.png"),
+            pygame.image.load("assets/player/skeleton_walk_03.png"),
+            pygame.image.load("assets/player/skeleton_walk_04.png"),
+            pygame.image.load("assets/player/skeleton_walk_05.png"),
+            pygame.image.load("assets/player/skeleton_walk_06.png"),
+            pygame.image.load("assets/player/skeleton_walk_07.png"),
+            pygame.image.load("assets/player/skeleton_walk_08.png"),
+            pygame.image.load("assets/player/skeleton_walk_09.png"),
+            pygame.image.load("assets/player/skeleton_walk_10.png"),
+            pygame.image.load("assets/player/skeleton_walk_11.png"),
+            pygame.image.load("assets/player/skeleton_walk_12.png"),      
+        ])
     
+    #to manualy set the player's location (spawning, or maybe teleportaion feature)
     def set_location(self, inputx, inputy):
         self.x = inputx
         self.y = inputy
@@ -37,6 +57,11 @@ class Player():
         return (self.x, self.y)
     
     def draw(self,screen):
+
+        #set default state as idle
+        self.state = 'idle'
+        if self.speed_x != 0:
+            self.state = 'walking'
 
         #changng the speed  of the player
         self.speed_x += self.accelaration_x
@@ -60,8 +85,10 @@ class Player():
         #resetting the accelaration to 0 so that character only accelarates while the key is pressed
         self.accelaration_x = 0
 
+        self.speed_y += self.accelaration_y
         #changing the location based on the speed
         self.x += self.speed_x
+        self.y += self.speed_y
 
         #drawing idle character
         if(self.state == 'idle'):
@@ -71,6 +98,14 @@ class Player():
                 self.player_idle_animation.draw(screen, self.x, self.y, True)
 
             self.player_idle_animation.update()
+        
+        elif(self.state == 'walking'):
+            if self.direction == 'right':
+                self.player_walking_animation.draw(screen, self.x, self.y, False)
+            else:
+                self.player_walking_animation.draw(screen, self.x, self.y, True)
+            self.player_walking_animation.setAnimationSpeed(14/(abs(self.speed_x)+1))
+            self.player_walking_animation.update()
    
     def push_right(self):
         self.accelaration_x = variables.PLAYER_MOVEMENT_FORCE
@@ -79,5 +114,8 @@ class Player():
     def push_left(self):
         self.accelaration_x = -variables.PLAYER_MOVEMENT_FORCE
         self.direction = 'left'
+    
+    def jump(self):
+        self.speed_y = -variables.JUMP_SPEED
         
 
